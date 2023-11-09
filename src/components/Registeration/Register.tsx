@@ -16,12 +16,14 @@ export const Register = () => {
         confirmpassword: string
     }
 
-    function onChange() {
-    }
-
+    
+    const [verified, setVerified] = useState(false)
     const [isSignUp, setIsSignUp] = useState<boolean>(true)
     const [userInfo, setUserInfo] = useState<userRegisteration>({ name: "", email: "", password: "", confirmpassword: "" })
     const [error, seterror] = useState({ name: false, email: false, password: false, confirmpassword: false });
+    function onChange() {
+        setVerified(true);
+    }
     const handletoken = (credentialResponse: string) => {
         const decoded: userRegisteration = jwtDecode(credentialResponse);
         setUserInfo({
@@ -170,7 +172,7 @@ export const Register = () => {
                             sitekey={import.meta.env.VITE_Site_Key}
                             onChange={onChange}
                         />
-                        <button className="m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center" style={{ borderRadius: "4px" }}>Submit <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
+                        <button disabled={!verified} className="m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center" style={{ borderRadius: "4px" }}>Submit <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
                     </div>
                 </div>
             </div>
