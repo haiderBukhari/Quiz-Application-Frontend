@@ -72,7 +72,7 @@ export const Register = () => {
                                 })
                             }}
                             render={renderProps => (
-                                <div className="flex justify-center items-center text-sm font-semibold mt-4 p-2 mr-2" style={{ border: "1px solid #ccc", borderRadius: "3px", width: "217px" }}>
+                                <div className="flex justify-center items-center text-sm font-semibold mt-4 p-2 mr-2" style={{ border: "1px solid #ccc", paddingTop: "6.5px", paddingBottom: "6.5px", borderRadius: "3px", width: "217px" }}>
                                     <FacebookIcon style={{ color: "#4267B2", marginRight: "10px" }} />
                                     <button onClick={renderProps.onClick}>Sign in with Facebook</button>
                                 </div>
@@ -171,8 +171,9 @@ export const Register = () => {
                         <ReCAPTCHA
                             sitekey={import.meta.env.VITE_Site_Key}
                             onChange={onChange}
+                            style={{ marginTop: "14px"}}
                         />
-                        <button disabled={!verified} className="m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center" style={{ borderRadius: "4px" }}>Submit <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
+                        <button disabled={!verified} className={`m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center ${verified ? 'cursor-pointer' : 'cursor-not-allowed'}`} style={{ borderRadius: "4px" }}>Submit <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
                     </div>
                 </div>
             </div>
