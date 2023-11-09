@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom"
-import { Register } from "../components"
+import { RegisterUser } from "../pages"
 export default function ReactRoutes() {
     return (
         <Routes>
-            <Route path="*" element={<Register/>}/>
+            <Route path="*" element={<RegisterUser/>}/>
         </Routes>
     )
 }
