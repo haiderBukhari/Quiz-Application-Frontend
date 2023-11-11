@@ -7,13 +7,16 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ReCAPTCHA from "react-google-recaptcha";
+import { AuthProps } from "../../utils/helper";
 
-export const Login = () => {
+export const Login: React.FC<AuthProps> = ({otpModel, setOtpModel}) => {
     interface userRegisteration {
         email: string,
         password: string,
     }
-
+    useEffect(()=>{
+        setOtpModel(otpModel)
+    }, [])
     const [verified, setVerified] = useState(false)
     const [userInfo, setUserInfo] = useState<userRegisteration>({ email: "", password: ""})
     const [error, seterror] = useState({ name: false, email: false, password: false, confirmpassword: false });
@@ -35,10 +38,9 @@ export const Login = () => {
             <h1 style={{ fontSize: "27px" }} className="font-semibold text-center mt-10">Sign in to your account.</h1>
             <p className="text-center mt-6 font-sans">Build Skill for today, tomorrow, and beyond</p>
             <p className="text-center font-sans">Education to future-proof your career</p>
-            <div className="flex justify-center mt-3 flex-wrap">
-                <div className="mt-4 mr-2">
-                    <GoogleLogin
-                        onSuccess={credentialResponse => {
+            <div className="flex justify-center items-center mt-3 flex-wrap">
+                <div className="mt-4 mr-2" style={{width: "auto"}}>
+                    <GoogleLogin onSuccess={credentialResponse => {
                             handletoken(credentialResponse.credential || '')
                         }}
                         onError={() => {
@@ -58,9 +60,9 @@ export const Login = () => {
                         })
                     }}
                     render={renderProps => (
-                        <div className="flex justify-center items-center text-sm font-semibold mt-4 p-2 mr-2" style={{ border: "1px solid #ccc", paddingTop: "6.5px", paddingBottom: "6.5px", borderRadius: "3px", width: "217px" }}>
+                        <div className="flex justify-center items-center text-sm font-semibold mt-4 p-2 mr-2 text-gray-700" style={{ border: "1px solid #ccc", paddingTop: "6.5px", paddingBottom: "6.5px", borderRadius: "3px", width: "auto" }}>
                             <FacebookIcon style={{ color: "#4267B2", marginRight: "10px" }} />
-                            <button onClick={renderProps.onClick}>Sign in with Facebook</button>
+                            <button onClick={renderProps.onClick}>Sign up with Facebook</button>
                         </div>
                     )}
                 />
@@ -125,7 +127,7 @@ export const Login = () => {
                     onChange={onChange}
                     style={{ marginTop: "14px" }}
                 />
-                <button disabled={!verified || error.email || error.password} className={`m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center ${verified ? 'cursor-pointer' : 'cursor-not-allowed'}`} style={{ borderRadius: "4px" }}>Sign In <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
+                <button onClick={()=>{setOtpModel(!otpModel)}} disabled={!verified || error.email || error.password} className={`m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center ${verified ? 'cursor-pointer' : 'cursor-not-allowed'}`} style={{ borderRadius: "4px" }}>Sign In <ArrowForwardIcon style={{ marginLeft: "5px"}} /></button>
             </div>
         </div>
     )
