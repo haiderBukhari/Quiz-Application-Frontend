@@ -7,33 +7,46 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ReCAPTCHA from "react-google-recaptcha";
-import { AuthProps } from "../../utils/helper";
-import { OTPREQUEST } from "../../API/PostRequests";
+import { OTPREQUEST, RegisterUser } from "../../services/api/PostRequests";
 import LoaderModal from "../Loader";
-import CustomizedSnackbars from "../ToastNotifications";
+import { ToastSuccess, ToastError } from "../ToastNotifications";
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import { useNavigate } from "react-router-dom";
 
-export const Register: React.FC<AuthProps> = ({ otpModel, setOtpModel }) => {
+export type AuthProps = {
+    setOtpModel: (otpModel: boolean) => void
+    verify: boolean
+    setverify: (otpModel: boolean) => void
+    otp: string[]
+    setOtp: (otp: string[]) => void
+}
+export const Register: React.FC<AuthProps> = ({ setOtpModel, verify, setverify, otp, setOtp }) => {
     interface userRegisteration {
         name: string,
         email: string,
         password: string,
         confirmpassword: string
     }
-
-    useEffect(() => {
-        setOtpModel(otpModel);
-    }, []);
-
-    const inital = { status: false, display: "", current: "" };
+    const Navigate = useNavigate();
     const [loading, setloading] = useState(false);
-    const [verified, setVerified] = useState(true);
-    const [toast, setToast] = useState(inital);
+    const [verified, setVerified] = useState(false);
+    const [submit, setsubmit] = useState(false);
     const [userInfo, setUserInfo] = useState<userRegisteration>({
         name: "",
         email: "",
         password: "",
         confirmpassword: ""
     });
+
+    useEffect(() => {
+        function verifyAll(password: string) {
+            const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[$@!#*]).{8,}$/.test(password);
+            return isValid;
+        }
+        setsubmit(verifyAll(userInfo.password));
+    }, [userInfo.password])
+
     const [error, seterror] = useState({
         name: false,
         email: false,
@@ -45,42 +58,64 @@ export const Register: React.FC<AuthProps> = ({ otpModel, setOtpModel }) => {
         setVerified(true);
     }
 
-    const handletoken = (credentialResponse: string) => {
-        const decoded: userRegisteration = jwtDecode(credentialResponse);
-        setUserInfo({
+    type ObjectType = {
+        name: string,
+        email: string,
+        password: string,
+        confirmpassword: string
+    }
+    const handleRegister = async (Userdata: ObjectType) => {
+        setloading(true);
+        await OTPREQUEST(Userdata?.email)
+            .then((res) => {
+                if (res && res != 'string' && res.data) {
+                    ToastSuccess("OTP Sent Successfully")
+                    setOtpModel(true)
+                } else {
+                    console.log(res);
+                    ToastError(res.response.data.message)
+                }
+                setloading(false);
+            })
+            .catch((err) => {
+                console.log(err)
+                setloading(false);
+                ToastError(err)
+            });
+    }
+
+    const handletoken = async (credentialResponse: string) => {
+        const decoded: userRegisteration = await jwtDecode(credentialResponse);
+        const userdata = {
             name: decoded.name ?? 'Anonymous',
             email: decoded.email ?? 'anonymous@quizapp.com',
             password: import.meta.env.VITE_Special_Password,
             confirmpassword: import.meta.env.VITE_Special_Password,
-        });
-    }
-
-    const handleRegister = () => {
-        setloading(true);
-        OTPREQUEST(userInfo.email)
-            .then((res) => {
-                console.log(res);
-                if (res.data) {
-                    setloading(false);
-                    setToast({ status: true, display: "OTP Sent Successfully", current: "success" })
-                    setOtpModel(!otpModel)
-                } else {
-                    throw new Error();
-                }
-            })
-            .catch(() => {
-                setloading(false);
-                setToast({ status: true, display: "Error during Registering, Try with different Email", current: "error" })
-            });
+        };
+        setUserInfo(userdata);
+        handleRegister(userdata);
     }
     useEffect(() => {
-        if (toast.display) {
-            setTimeout(() => {
-                setToast(inital)
-            }, 4000);
+        if (verify === true) {
+            RegisterUser(userInfo.name, userInfo.email, userInfo.password, userInfo.confirmpassword, otp.join('')).then((res) => {
+                setOtpModel(false);
+                if (res != 'string' && res.data) {
+                    ToastSuccess("Registered Successfully! Please Login")
+                    Navigate('/auth/login')
+                }
+                else {
+                    ToastError(res)
+                }
+                setverify(false)
+                setloading(false);
+            }).catch((err) => {
+                alert(err)
+                setOtp(new Array(6).fill(''))
+                setverify(false)
+                setloading(false);
+            })
         }
-    }, [toast.display, inital])
-
+    }, [verify])
     return (
         <div className="my-3 mx-2 px-4">
             <h1 style={{ fontSize: "27px" }} className="font-semibold text-center mt-10">Create your account.</h1>
@@ -178,12 +213,49 @@ export const Register: React.FC<AuthProps> = ({ otpModel, setOtpModel }) => {
                                 }
                                 else {
                                     seterror({ ...error, password: false })
-                                    setUserInfo({ ...userInfo, password: e.target.value })
                                 }
+                                setUserInfo({ ...userInfo, password: e.target.value })
                             }}
-                            maxRows={4}
                             style={{ marginTop: "15px" }}
                         />
+                        <div style={{ width: '100%', padding: '20px', border: '1px solid #ccc', boxShadow: "1px 1px 1px 1px #f4f4f4, -2px -2px 1px #f4f4f4" }} className="bg-slate-100 rounded-md my-3 flex flex-col justify-center">
+                            <div className="flex">
+                                {
+                                    /[a-z]/.test(userInfo.password ?? "") ? <CheckCircleOutlineOutlinedIcon style={{ color: 'green', marginRight: "10px" }} /> : <ErrorOutlineOutlinedIcon style={{ color: 'red', marginRight: "10px" }} />
+                                }
+                                <p>Lower case letters (abc)</p>
+                            </div>
+                            <div className="flex mt-2">
+                                {
+                                    /[A-Z]/.test(userInfo.password) ? <CheckCircleOutlineOutlinedIcon style={{ color: 'green', marginRight: "10px" }} /> : <ErrorOutlineOutlinedIcon style={{ color: 'red', marginRight: "10px" }} />
+                                }
+                                <p>Upper case letters (ABC)</p>
+                            </div>
+                            <div className="flex mt-2">
+                                {
+                                    /[0-9]/.test(userInfo.password) ? <CheckCircleOutlineOutlinedIcon style={{ color: 'green', marginRight: "10px" }} /> : <ErrorOutlineOutlinedIcon style={{ color: 'red', marginRight: "10px" }} />
+                                }
+                                <p>Numbers (123)</p>
+                            </div>
+                            <div className="flex mt-2">
+                                {
+                                    /[$@!#*]/.test(userInfo.password) ? <CheckCircleOutlineOutlinedIcon style={{ color: 'green', marginRight: "10px" }} /> : <ErrorOutlineOutlinedIcon style={{ color: 'red', marginRight: "10px" }} />
+                                }
+                                <p>Special Character ($,@,!,#,*)</p>
+                            </div>
+                            <div className="flex mt-2">
+                                {
+                                    userInfo.password.length >= 8 ? <CheckCircleOutlineOutlinedIcon style={{ color: 'green', marginRight: "10px" }} /> : <ErrorOutlineOutlinedIcon style={{ color: 'red', marginRight: "10px" }} />
+                                }
+                                <p>Minimum 8 characters</p>
+                            </div>
+                            <div className="flex mt-2">
+                                {
+                                    userInfo.password === userInfo.confirmpassword && userInfo.password != "" ? <CheckCircleOutlineOutlinedIcon style={{ color: 'green', marginRight: "10px" }} /> : <ErrorOutlineOutlinedIcon style={{ color: 'red', marginRight: "10px" }} />
+                                }
+                                <p>Password Match</p>
+                            </div>
+                        </div>
                         <TextField
                             id="outlined-password-input"
                             label="Confirm Password"
@@ -195,8 +267,8 @@ export const Register: React.FC<AuthProps> = ({ otpModel, setOtpModel }) => {
                                 }
                                 else {
                                     seterror({ ...error, confirmpassword: false })
-                                    setUserInfo({ ...userInfo, confirmpassword: e.target.value })
                                 }
+                                setUserInfo({ ...userInfo, confirmpassword: e.target.value })
                             }}
                             maxRows={4}
                             style={{ marginTop: "15px", marginBottom: "20px" }}
@@ -211,14 +283,10 @@ export const Register: React.FC<AuthProps> = ({ otpModel, setOtpModel }) => {
                     onChange={onChange}
                     style={{ marginTop: "14px" }}
                 />
-                {/* disabled={!verified || error.email || error.name || error.confirmpassword || error.password}  */}
-                <button onClick={() => { handleRegister() }} className={`m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center ${verified ? 'cursor-pointer' : 'cursor-not-allowed'}`} style={{ borderRadius: "4px" }}>Sign Up <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
+                <button disabled={!verified || error.password || error.email || error.name || error.confirmpassword || !submit} onClick={() => { handleRegister(userInfo) }} className={`m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center ${(verified && !error.password && !error.email && !error.name && !error.email && !error.confirmpassword && submit) ? 'cursor-pointer' : 'cursor-not-allowed'}`} style={{ borderRadius: "4px" }}>Sign Up <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
             </div>
             {
                 loading && <LoaderModal />
-            }
-            {
-                toast.status && <CustomizedSnackbars status={toast.current} str={toast.display} />
             }
         </div>
     )

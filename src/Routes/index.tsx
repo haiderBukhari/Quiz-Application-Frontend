@@ -1,9 +1,12 @@
 import { Routes, Route } from "react-router-dom"
-import { RegisterUser } from "../pages"
+import { RegisterUser, LoginUser } from "../pages"
+
 export default function ReactRoutes() {
     return (
         <Routes>
-            <Route path="*" element={<RegisterUser/>}/>
+            <Route path="/auth/register" element={<RegisterUser/>}/>
+            <Route path="/auth/login" element={<LoginUser/>}/>
+            <Route path="*" element="Wrong Page"/>
         </Routes>
     )
 }

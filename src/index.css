@@ -3,15 +3,25 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     text-decoration: none;
     list-style: none;
 }
-body{
+
+body {
     font-family: 'Open Sans', sans-serif;
     font-size: 1.3rem;
     line-height: 1.2rem;
+}
+
+.Toastify__toast-body {
+    font-size: 14px;
+    /* Adjust the font size as needed */
+}
+
+.toast {
+    height: 20px;
 }

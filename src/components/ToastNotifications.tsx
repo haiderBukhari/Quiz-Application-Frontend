@@ -1,39 +1,29 @@
-import * as React from 'react';
-import Stack from '@mui/material/Stack';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { toast } from "react-toastify";
 
-interface CustomizedSnackbarsProps {
-    str: string;
-    status: string
+
+export function ToastError(message: string) {
+    toast.error(message, {
+        position: "bottom-left",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-    props,
-    ref,
-) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
-export default function CustomizedSnackbars({status, str }: CustomizedSnackbarsProps) {
-    const [open, setOpen] = React.useState(true);
-    const handleClose = (
-        event?: React.SyntheticEvent | Event,
-        reason?: string,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpen(false);
-    };
-
-    return (
-        <Stack spacing={2} sx={{ width: '100%' }}>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity={`${status === 'success'  ? "success" : "error"}`} sx={{ width: '100%' }}>
-                    {str}
-                </Alert>
-            </Snackbar>
-        </Stack>
-    );
+export function ToastSuccess(message: string) {
+    toast.success(message, {
+        position: "bottom-left",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
 }

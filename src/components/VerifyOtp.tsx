@@ -9,15 +9,16 @@ import LoaderModal from './Loader';
 
 type AuthProps = {
     otpModel: boolean,
-    setOtpModel: (otpModel: boolean) => void
+    setOtpModel: (otpModel: boolean) => void,
+    verify: boolean,
+    setverify: (verify: boolean) => void,
+    otp: Array<string>,
+    setOtp: (otp: Array<string>) => void
 }
 
-const VerifyOtp = ({ otpModel, setOtpModel }: AuthProps) => {
+const VerifyOtp = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp }: AuthProps) => {
     const referenceInput = useRef(new Array(6).fill(null));
     const [current, setcurrent] = useState(0);
-    const [otp, setOtp] = useState(new Array(6).fill(''));
-    const [verify, setverify] = useState(false)
-
 
     useEffect(() => {
         referenceInput.current[0]?.focus();
@@ -25,18 +26,14 @@ const VerifyOtp = ({ otpModel, setOtpModel }: AuthProps) => {
 
     function handleDelete() {
         const otpArray = [...otp];
-
         if (otpArray[current] !== '') {
-            // If the current input has a value, clear its content
             otpArray[current] = '';
         } else if (current > 0) {
-            // If the current input is empty, move to the previous input and clear its content
             const prevIndex = current - 1;
             otpArray[prevIndex] = '';
             setcurrent(prevIndex);
             referenceInput.current[prevIndex].focus();
         }
-
         setOtp(otpArray);
     }
 
@@ -118,5 +115,4 @@ const VerifyOtp = ({ otpModel, setOtpModel }: AuthProps) => {
         </>
     )
 }
-
 export default VerifyOtp;
