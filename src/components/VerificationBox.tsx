@@ -14,10 +14,11 @@ type AuthProps = {
     setverify: (verify: boolean) => void,
     otp: Array<string>,
     setOtp: (otp: Array<string>) => void
+    VerificationLength: number
 }
 
-const VerifyOtp = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp }: AuthProps) => {
-    const referenceInput = useRef(new Array(6).fill(null));
+const VerificationBox = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp, VerificationLength }: AuthProps) => {
+    const referenceInput = useRef(new Array(VerificationLength).fill(null));
     const [current, setcurrent] = useState(0);
 
     useEffect(() => {
@@ -37,7 +38,7 @@ const VerifyOtp = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp }: Au
         setOtp(otpArray);
     }
 
-    function addOtp(e:any) {
+    function addOtp(e: any) {
         const value = e.target.value;
 
         if (!value) {
@@ -48,15 +49,15 @@ const VerifyOtp = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp }: Au
         otpArray[current] = value;
         setOtp(otpArray);
 
-        if (current + 1 == 6) {
+        if (current + 1 == VerificationLength) {
             setverify(true)
         }
-        const index = current + 1 >= 6 ? current : current + 1;
+        const index = current + 1 >= VerificationLength ? current : current + 1;
         setcurrent(index);
 
-        if (index < 6) {
+        if (index < VerificationLength) {
             referenceInput.current[index].focus();
-            index < 5 && (referenceInput.current[index].value = "")
+            index < VerificationLength - 1 && (referenceInput.current[index].value = "")
         }
     }
 
@@ -77,7 +78,7 @@ const VerifyOtp = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp }: Au
                     </DialogContentText>
                     <div className='flex justify-center my-6'>
                         {
-                            new Array(6).fill(22).map((val, index) => (
+                            new Array(VerificationLength).fill(22).map((val, index) => (
                                 <input
                                     key={val * 1022}
                                     type="text"
@@ -115,4 +116,4 @@ const VerifyOtp = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp }: Au
         </>
     )
 }
-export default VerifyOtp;
+export default VerificationBox;

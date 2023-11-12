@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Register } from "../components"
-import VerifyOtp from "../components/VerifyOtp"
+import VerificationBox from "../components/VerificationBox"
 import { useNavigate } from "react-router-dom";
 
 export const RegisterUser = () => {
@@ -19,7 +19,7 @@ export const RegisterUser = () => {
                     <Register setOtpModel={setOtpModel} verify={verify} setverify={setverify} otp={otp} setOtp={setOtp} />
                 }
                 {
-                    otpModel && <VerifyOtp otpModel={otpModel} setOtpModel={setOtpModel} verify={verify} setverify={setverify} otp={otp} setOtp={setOtp} />
+                    otpModel && <VerificationBox otpModel={otpModel} setOtpModel={setOtpModel} verify={verify} setverify={setverify} otp={otp} setOtp={setOtp} VerificationLength={6} />
                 }
             </div>
         </div>

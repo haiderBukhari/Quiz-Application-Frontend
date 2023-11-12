@@ -18,6 +18,7 @@ export const Login = () => {
         email: string,
         password: string,
     }
+    const [deactivated, setdeactivated] = useState(false)
     const [verified, setVerified] = useState(false)
     const [userInfo, setUserInfo] = useState<userRegisteration>({ email: "", password: "" })
     const [error, seterror] = useState({ name: false, email: false, password: false, confirmpassword: false });
@@ -49,6 +50,9 @@ export const Login = () => {
             }
             else{
                 ToastError(res.response.data.message)
+                if(res.response.data.message.includes('deactivated')){
+                    setdeactivated(true)
+                }
             }
             setLoading(false)
         }).catch((err) => {
@@ -194,6 +198,9 @@ export const Login = () => {
                 />
                 <button onClick={()=>{handlesubmit(userInfo)}} disabled={!verified || error.email || error.password || !submit} className={`m-aut0 px-12 py-3 text-white mt-5 bg-sky-600 hover:bg-sky-500 flex justify-center items-center ${(verified && submit) ? 'cursor-pointer' : 'cursor-not-allowed'}`} style={{ borderRadius: "4px" }}>Sign In <ArrowForwardIcon style={{ marginLeft: "5px" }} /></button>
             </div>
+            {
+                deactivated && (<></>)
+            }
             {
                 loading && <LoaderModal />
             }
