@@ -8,6 +8,7 @@ export default function ReactRoutes() {
             <Route path="/auth/register" element={<RegisterUser/>}/>
             <Route path="/auth/login" element={<LoginUser/>}/>
             <Route path="/auth/activateaccount" element={<ActivateAccount/>}/>
+            <Route path="/auth/activateaccount/:id" element={<ActivateAccount/>}/>
             <Route path="*" element="Wrong Page"/>
         </Routes>
     )

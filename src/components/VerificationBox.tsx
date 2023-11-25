@@ -15,9 +15,11 @@ type AuthProps = {
     otp: Array<string>,
     setOtp: (otp: Array<string>) => void
     VerificationLength: number
+    heading?: string,
+    para?: string
 }
 
-const VerificationBox = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp, VerificationLength }: AuthProps) => {
+const VerificationBox = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp, VerificationLength, heading, para}: AuthProps) => {
     const referenceInput = useRef(new Array(VerificationLength).fill(null));
     const [current, setcurrent] = useState(0);
 
@@ -54,7 +56,6 @@ const VerificationBox = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp
         }
         const index = current + 1 >= VerificationLength ? current : current + 1;
         setcurrent(index);
-
         if (index < VerificationLength) {
             referenceInput.current[index].focus();
             index < VerificationLength - 1 && (referenceInput.current[index].value = "")
@@ -70,11 +71,11 @@ const VerificationBox = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    <p className='text-2xl font-semibold text-center my-2'>Verify OTP</p>
+                    <p className='text-2xl font-semibold text-center my-2'>{heading}</p>
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Check your <span className='font-semibold'>Email</span> for the OTP and verify it below. This verification is only for the first time. You can login without OTP next time.
+                        Check your <span className='font-semibold'>Email</span> for the code and verify it below. {para}
                     </DialogContentText>
                     <div className='flex justify-center my-6'>
                         {
@@ -99,7 +100,12 @@ const VerificationBox = ({ otpModel, setOtpModel, verify, setverify, otp, setOtp
                                         if (e.key === 'Backspace') {
                                             handleDelete()
                                         }
+                                        else{
+                                            setOtp([...otp, otp[index] = e.target.value])
+                                        }
                                     }}
+                                    // placeholder='0'
+                                    value={otp[index]}
                                 />
                             ))
                         }

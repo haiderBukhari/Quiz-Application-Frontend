@@ -42,3 +42,17 @@ export function LoginUser(email:string, password: string){
         return res;
     }).catch(err=>{return err});
 }
+
+
+export function AuthenticateAccount(email:string, key: string){
+    return axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/activateaccount`, {
+        "email": email,
+        "key": key,
+    }, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then((res)=>{
+        return res;
+    }).catch(err=>{return err});
+}

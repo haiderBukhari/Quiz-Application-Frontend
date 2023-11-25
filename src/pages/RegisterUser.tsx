@@ -19,7 +19,7 @@ export const RegisterUser = () => {
                     <Register setOtpModel={setOtpModel} verify={verify} setverify={setverify} otp={otp} setOtp={setOtp} />
                 }
                 {
-                    otpModel && <VerificationBox otpModel={otpModel} setOtpModel={setOtpModel} verify={verify} setverify={setverify} otp={otp} setOtp={setOtp} VerificationLength={6} />
+                    otpModel && <VerificationBox otpModel={otpModel} setOtpModel={setOtpModel} verify={verify} setverify={setverify} otp={otp} setOtp={setOtp} VerificationLength={6} heading="Verify OTP" para="This verification is only for the first time. You can login without OTP next time."/>
                 }
             </div>
         </div>
